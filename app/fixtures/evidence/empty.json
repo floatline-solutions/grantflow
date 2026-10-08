@@ -1,0 +1,6 @@
+{
+  "name": "empty: milestone 3 spec vs the placeholder report and vs an empty string",
+  "spec_from_grant_milestone": 2,
+  "report_file": "reports/m3-report-empty.md",
+  "expected": ["missing", "missing", "missing", "missing", "missing"]
+}

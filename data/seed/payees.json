@@ -1,0 +1,94 @@
+{
+  "vendors": [
+    {
+      "id": "V-001",
+      "name": "Aminata Diallo (field coordinator)",
+      "address": "GDOOM6UVWWW2DS5343L76ZUWOCHPXDMECOIGIHPSVJPG7VEOMZGFVAR5",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "personnel"
+      ],
+      "notes": "Contractor invoice monthly; prefers payment before the 5th."
+    },
+    {
+      "id": "V-002",
+      "name": "Kaolack Enumerators Co-operative",
+      "address": "GCH3I6IHR2U4Y7K4M7XMXZE4DJ4IVCZWUOPTNL75XGABCSFK2IME77YZ",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "personnel",
+        "fieldwork"
+      ],
+      "notes": "Co-op treasurer signs invoices; 2 spelling variants seen on invoices (Kaolack Enumarators)."
+    },
+    {
+      "id": "V-003",
+      "name": "BioLab Supplies Dakar SARL",
+      "address": "GBIN4PDX7JXDEAUWG64JJLGJ5C75W2WUFPPZHFOAW2FXGOACIIZCUURZ",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "equipment"
+      ],
+      "notes": "Quotes in XOF, invoices in USD; VAT line sometimes missing."
+    },
+    {
+      "id": "V-004",
+      "name": "Transport Ndiaye & Fils",
+      "address": "GBJJZBMGJFRJEULWKLBNEXSK4OANAFLLCLDP7DMLPXTA3OHYSDJGUWIA",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "fieldwork"
+      ],
+      "notes": "Cash-style receipts, photographed. Fuel + driver per diem."
+    },
+    {
+      "id": "V-005",
+      "name": "Hotel Le Baobab (training venue)",
+      "address": "GCOHOGQD4FAKUAAVJE4HHBPWNZDRT6NNK7CK3ZI62IXDZ5SMIV5GDMZS",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "training"
+      ],
+      "notes": "Deposit + balance; balance invoice arrives ~2 weeks late."
+    },
+    {
+      "id": "V-006",
+      "name": "Universite Cheikh Anta Diop - Direction Financiere",
+      "address": "GBYTDLOGGHQ6APV2Q6HADBXETMENBCH35MOXQ3ZEBPJHZKJMZ6JYBB6M",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "overhead"
+      ],
+      "notes": "Institutional overhead, 2 fixed instalments."
+    },
+    {
+      "id": "V-007",
+      "name": "Wave Money Payout Anchor (SEP-24)",
+      "address": "CDR6IJZADN2WVUAISW7EU5SSDVSXWJ5ZEKQGJSQNNKQL7OSPHELLYCUS",
+      "country": "SN",
+      "status": "active",
+      "categories": [
+        "fieldwork",
+        "personnel"
+      ],
+      "notes": "Contract address of a mobile-money anchor; amounts settle in XOF to enumerator phones."
+    },
+    {
+      "id": "V-008",
+      "name": "Sahel Consulting Group",
+      "address": "GDWTWSXHLSSP7WQTHZLPVELYHTWOBJ5RKBOH2SAP5SMBWYHJOII2NAOC",
+      "country": "SN",
+      "status": "blocked",
+      "categories": [
+        "fieldwork"
+      ],
+      "notes": "BLOCKED 2025-09-02: duplicate invoices found in prior grant. Do not allowlist."
+    }
+  ]
+}

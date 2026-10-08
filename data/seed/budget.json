@@ -1,0 +1,34 @@
+{
+  "grant": "Community health worker incentives - Kaolack and Fatick regions",
+  "milestone": 0,
+  "currency": "USDC",
+  "per_tx_max_usdc": "3000",
+  "categories": [
+    {
+      "name": "personnel",
+      "label": "Personnel and enumerators",
+      "cap_usdc": "6,000.00"
+    },
+    {
+      "name": "equipment",
+      "label": "Equipment and lab supplies",
+      "cap_usdc": "2500"
+    },
+    {
+      "name": "fieldwork",
+      "label": "Field work, transport, per diems",
+      "cap_usdc": "2000.00"
+    },
+    {
+      "name": "training",
+      "label": "Training and workshops",
+      "cap_usdc": " 1200 "
+    },
+    {
+      "name": "overhead",
+      "label": "Institutional overhead (6.4%)",
+      "cap_usdc": "800.0"
+    }
+  ],
+  "note": "Caps sum to 12,500.00, the milestone-1 tranche. Overhead is 6.4% by the funder policy, rounded to 800."
+}

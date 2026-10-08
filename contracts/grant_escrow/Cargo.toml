@@ -1,0 +1,17 @@
+[package]
+name = "grant_escrow"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }
+# The scenario test registers the real policy wallet next to the escrow.
+policy_wallet = { path = "../policy_wallet", features = ["testutils"] }

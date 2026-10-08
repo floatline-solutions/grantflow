@@ -1,0 +1,65 @@
+{
+  "title": "Community health worker incentives - Kaolack and Fatick regions",
+  "funder": {
+    "name": "Example Global Health Foundation (fiscal sponsor)",
+    "address": "GD6KDMPXS3M4TR7QSV2GZCT7XMNWBCRJNDRXKEVNJ4WGEPSKL2MI3RQO"
+  },
+  "grantee": {
+    "institution": "Universite Cheikh Anta Diop, Institut de Sante et Developpement",
+    "pi": "Dr. Fatou Ndiaye",
+    "wallet_signer_public_key": "GBZ7PORQTFGXF2XQ5ZWQXCHOQSHPS6D7ESPCXGXXGXHNU3BARNSQQSCR",
+    "wallet_signer_secret_key_for_local_demo_only": "SCI67DV7LM757EKPI3C7YATYYHW36R7T6ELY3O2QUBWOHZXNORMGLILA"
+  },
+  "token": {
+    "code": "USDC",
+    "issuer_testnet": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+    "decimals": 7
+  },
+  "reviewers": [
+    {
+      "name": "Programme officer",
+      "address": "GABO65CWSYB2CFSR2SIVEG7XEK7ETDGJUN6I5UPQAUMND2VI5KFVA2VF"
+    },
+    {
+      "name": "Prime institution grants manager",
+      "address": "GAJLDZXEFXO2UWLNCLMASFJHJ6CLVLGGOV24IPBS3LDDKYCW55VFINTS"
+    },
+    {
+      "name": "External technical reviewer",
+      "address": "GDQMBGBTAQOTEGYLI3DJU5ZSCULI4P2G6DLHX2TGDI3JBVJB6SOUQIVU"
+    }
+  ],
+  "quorum": 2,
+  "deadline": "2026-04-07T06:13:20Z",
+  "deadline_unix": 1775552000,
+  "milestones": [
+    {
+      "idx": 0,
+      "title": "Baseline survey and enumerator training",
+      "amount_usdc": "12,500.00",
+      "due": "2025-11-23T06:13:20Z",
+      "due_unix": 1763888000,
+      "spec_markdown": "# Milestone 1 - Baseline survey and enumerator training\n\nDeliverables:\n1. Enumerator training completed for at least 12 enumerators, with attendance sheet.\n2. Survey instrument translated into Wolof and pre-tested with 30 respondents.\n3. Baseline sample frame of 600 households drawn from the 2023 census list, with sampling weights.\n4. Ethics approval letter from the CNERS committee attached.\n5. Field data collection plan with dates per district (Kaolack, Fatick).",
+      "report_file": "reports/m1-report.md"
+    },
+    {
+      "idx": 1,
+      "title": "Baseline data collection and cleaned dataset",
+      "amount_usdc": "15000",
+      "due": "2026-01-17T06:13:20Z",
+      "due_unix": 1768640000,
+      "spec_markdown": "# Milestone 2 - Baseline data collection and cleaned dataset\n\nDeliverables:\n1. Baseline survey completed with at least 540 of 600 households (90% response rate).\n2. Cleaned dataset delivered in CSV with a codebook.\n3. Data quality report: back-check results on 10% of interviews and GPS coverage map.\n4. Interim financial report reconciling the category ledger with vendor invoices.\n5. Short summary of preliminary findings (2 pages).",
+      "report_file": "reports/m2-report-v2.md",
+      "rejected_report_file": "reports/m2-report-v1.md"
+    },
+    {
+      "idx": 2,
+      "title": "Analysis, dissemination and final report",
+      "amount_usdc": "10 000.0",
+      "due": "2026-03-18T06:13:20Z",
+      "due_unix": 1773824000,
+      "spec_markdown": "# Milestone 3 - Analysis, dissemination and final report\n\nDeliverables:\n1. Analysis report with pre-registered outcomes and effect estimates.\n2. Two dissemination workshops held (Dakar and Kaolack) with participant lists.\n3. Policy brief in French and English.\n4. Anonymised public-use dataset deposited in an open repository with a DOI.\n5. Final financial report and asset register.",
+      "report_file": "reports/m3-report-empty.md"
+    }
+  ]
+}

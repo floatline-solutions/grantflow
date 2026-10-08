@@ -1,0 +1,22 @@
+{
+  "name": "grantflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI and evidence checker for milestone grant disbursement into policy-constrained sub-grantee wallets on Stellar",
+  "type": "module",
+  "bin": { "grantflow": "dist/src/cli.js" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test \"dist/test/*.test.js\"",
+    "grantflow": "node dist/src/cli.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "@stellar/stellar-sdk": "^17.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.9.0"
+  }
+}

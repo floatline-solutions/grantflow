@@ -1,0 +1,6 @@
+{
+  "name": "complete: milestone 1 spec vs the milestone 1 report",
+  "spec_from_grant_milestone": 0,
+  "report_file": "reports/m1-report.md",
+  "expected": ["found", "found", "found", "found", "found"]
+}

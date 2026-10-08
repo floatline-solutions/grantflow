@@ -1,0 +1,22 @@
+[package]
+name = "policy_wallet"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+# "rlib" is added so grant_escrow's scenario test can link this crate natively
+# and register the real wallet contract; `stellar contract build` still builds
+# only the cdylib for wasm32v1-none.
+crate-type = ["cdylib", "rlib"]
+doctest = false
+
+[features]
+testutils = ["soroban-sdk/testutils"]
+
+[dependencies]
+soroban-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }
+ed25519-dalek = "2.2.0"
