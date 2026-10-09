@@ -83,6 +83,8 @@ pub struct Grant {
     pub funded: i128,
     /// Total released to the grantee wallet so far.
     pub released: i128,
+    /// Total amount of all milestones.
+    pub total_amount: i128,
     /// Set once the funder has clawed back; no further transitions.
     pub closed: bool,
 }
@@ -304,6 +306,7 @@ impl GrantEscrow {
             deadline,
             funded: 0,
             released: 0,
+            total_amount: total,
             closed: false,
         };
         write_grant(&env, id, &grant);
@@ -331,9 +334,8 @@ impl GrantEscrow {
         if grant.closed {
             return Err(Error::GrantClosed);
         }
-        let total: i128 = grant.milestones.iter().map(|m| m.amount).sum();
         let new_funded = grant.funded.checked_add(amount).ok_or(Error::Overfunded)?;
-        if new_funded > total {
+        if new_funded > grant.total_amount {
             return Err(Error::Overfunded);
         }
         token::TokenClient::new(&env, &grant.token).transfer(
