@@ -28,7 +28,7 @@ fiscal sponsors, DFI programmes.
 | `contracts/policy_wallet` | Soroban **custom account** (`__check_auth`) owned by the grantee key. `pay(category, payee, amount, memo_hash)` is the only thing the grantee key can authorise, and only within the funder's policy: allowlisted payees, per-payment ceiling, spend cap per category. Funder-only `set_policy`, `add_payee`, `remove_payee`, `rotate_key`. `policy()` and `ledger()` views. |
 | `app/` | TypeScript CLI `grantflow create\|fund\|submit\|review\|pay\|ledger\|export` composing transactions offline from the embedded contract specs (submits only when an RPC is reachable), plus the **evidence checker** (`app/src/ai/`): given a milestone spec and a report, one `found / missing / uncertain` verdict per deliverable with a citation. Heuristic provider by default; LLM provider when `LLM_API_KEY` is set. Reviewers decide; the checker never signs. |
 | `data/seed/` | A realistic 3-milestone grant (USDC 37,500) for a Senegalese health-research institution, a 5-line budget, 8 vendors (one blocked), 20 messy vendor payments, and four milestone reports. |
-| `scripts/` | `build.sh` (tests, wasm, spec embedding, app tests), `gen-specs.sh`, `deploy-testnet.sh` (**written, not executed here**: the build sandbox could not reach testnet). |
+| `scripts/` | `build.sh` (tests, wasm, spec embedding, app tests), `gen-specs.sh`, `deploy-testnet.sh` (deployed successfully to testnet). |
 
 Docs: [ARCHITECTURE.md](ARCHITECTURE.md) (contracts, auth flow, trust assumptions),
 [VALIDATION.md](VALIDATION.md) (evidence, metric, experiment plan), [DEMO.md](DEMO.md)
@@ -88,4 +88,4 @@ To point the CLI at a network, contract ids and signing keys, export the variabl
 ## Status
 
 **functional locally.** Contracts execute in the Soroban host via `cargo test`; wasm builds
-for `wasm32v1-none`; the app and its tests run offline. The `grant_escrow` contract is deployed to Testnet at [CBCMPCWBXR5Q5XRYGE4YUXKZKF56D2AM6UZJ6OGCQICJA3YIF2I3EI36](https://stellar.expert/explorer/testnet/contract/CBCMPCWBXR5Q5XRYGE4YUXKZKF56D2AM6UZJ6OGCQICJA3YIF2I3EI36). No users, no pilot, no partner: see [VALIDATION.md](VALIDATION.md).
+for `wasm32v1-none`; the app and its tests run offline. The contracts are deployed to Testnet: `grant_escrow` at [CBSOIBLTRBUFLZFJZA6JOFDD2FUCWNWSOOH3XAM2QJJOW4HQAVWGXYPN](https://stellar.expert/explorer/testnet/contract/CBSOIBLTRBUFLZFJZA6JOFDD2FUCWNWSOOH3XAM2QJJOW4HQAVWGXYPN) and `policy_wallet` at [CC4UKCMJEU5SXSQ74CKIUO6DEAKSDQDFADDM2WPAZ46EYN6J2CUWDIGL](https://stellar.expert/explorer/testnet/contract/CC4UKCMJEU5SXSQ74CKIUO6DEAKSDQDFADDM2WPAZ46EYN6J2CUWDIGL). No users, no pilot, no partner: see [VALIDATION.md](VALIDATION.md).

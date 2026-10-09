@@ -43,7 +43,7 @@ ESCROW=$(stellar contract deploy --network "$NETWORK" --source-account funder --
 echo "escrow: $ESCROW"
 
 echo "== deploy policy_wallet with the grantee's Ed25519 public key and the milestone-1 policy"
-GRANTEE_PUBKEY_HEX=$(node -e "const {StrKey}=require('$ROOT/app/node_modules/@stellar/stellar-sdk');console.log(StrKey.decodeEd25519PublicKey('$GRANTEE').toString('hex'))")
+GRANTEE_PUBKEY_HEX=$(node -e "const {StrKey}=require('$ROOT/app/node_modules/@stellar/stellar-sdk');console.log(Buffer.from(StrKey.decodeEd25519PublicKey('$GRANTEE')).toString('hex'))")
 POLICY=$(node -e "
 const fs=require('fs');const b=JSON.parse(fs.readFileSync('$SEED/budget.json'));const p=JSON.parse(fs.readFileSync('$SEED/payees.json'));
 const toStroops=s=>{s=s.trim().replace(/,/g,'');const [w,f='']=s.split('.');return (BigInt(w)*10000000n+BigInt(f.padEnd(7,'0'))).toString()};
