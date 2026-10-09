@@ -88,6 +88,4 @@ To point the CLI at a network, contract ids and signing keys, export the variabl
 ## Status
 
 **functional locally.** Contracts execute in the Soroban host via `cargo test`; wasm builds
-for `wasm32v1-none`; the app and its tests run offline. `scripts/deploy-testnet.sh` is
-**testnet-ready** but was not executed in this environment (no network access to Stellar
-testnet). No users, no pilot, no partner: see [VALIDATION.md](VALIDATION.md).
+for `wasm32v1-none`; the app and its tests run offline. The `grant_escrow` contract is deployed to Testnet at [CBCMPCWBXR5Q5XRYGE4YUXKZKF56D2AM6UZJ6OGCQICJA3YIF2I3EI36](https://stellar.expert/explorer/testnet/contract/CBCMPCWBXR5Q5XRYGE4YUXKZKF56D2AM6UZJ6OGCQICJA3YIF2I3EI36). No users, no pilot, no partner: see [VALIDATION.md](VALIDATION.md).
