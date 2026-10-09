@@ -176,6 +176,14 @@ pub struct ClawedBack {
     pub to: Address,
 }
 
+#[contractevent]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DeadlineExtended {
+    #[topic]
+    pub id: u64,
+    pub new_deadline: u64,
+}
+
 #[contract]
 pub struct GrantEscrow;
 
@@ -514,6 +522,26 @@ impl GrantEscrow {
         }
         .publish(&env);
         Ok(amount)
+    }
+
+    /// Extend the deadline of a grant. Funder only.
+    pub fn extend_deadline(env: Env, id: u64, new_deadline: u64) -> Result<(), Error> {
+        let mut grant = read_grant(&env, id)?;
+        grant.funder.require_auth();
+        if grant.closed {
+            return Err(Error::GrantClosed);
+        }
+        if new_deadline <= grant.deadline {
+            return Err(Error::InvalidDeadline);
+        }
+        grant.deadline = new_deadline;
+        write_grant(&env, id, &grant);
+        DeadlineExtended {
+            id,
+            new_deadline,
+        }
+        .publish(&env);
+        Ok(())
     }
 
     pub fn grant(env: Env, id: u64) -> Result<Grant, Error> {
