@@ -53,6 +53,7 @@ pub enum Error {
     PayeeAlreadyListed = 11,
     PayeeNotFound = 12,
     ForeignContract = 13,
+    CategoryCannotBeRemoved = 14,
 }
 
 /// One budget line: how much may be spent under `name` and how much has been.
@@ -347,6 +348,16 @@ impl PolicyWallet {
                 spent,
             });
         }
+        
+        // Ensure no categories with spent funds were dropped
+        for existing in current.categories.iter() {
+            if existing.spent > 0 {
+                if !merged.iter().any(|c| c.name == existing.name) {
+                    return Err(Error::CategoryCannotBeRemoved);
+                }
+            }
+        }
+
         let policy = Policy {
             categories: merged,
             payees: policy.payees,
