@@ -544,6 +544,21 @@ impl GrantEscrow {
         Ok(())
     }
 
+    /// Cancel a grant before it receives any funding. Funder only.
+    pub fn cancel_grant(env: Env, id: u64) -> Result<(), Error> {
+        let mut grant = read_grant(&env, id)?;
+        grant.funder.require_auth();
+        if grant.closed {
+            return Err(Error::GrantClosed);
+        }
+        if grant.funded > 0 {
+            return Err(Error::InvalidState);
+        }
+        grant.closed = true;
+        write_grant(&env, id, &grant);
+        Ok(())
+    }
+
     pub fn grant(env: Env, id: u64) -> Result<Grant, Error> {
         read_grant(&env, id)
     }
