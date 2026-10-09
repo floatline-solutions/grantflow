@@ -444,6 +444,26 @@ impl PolicyWallet {
             .get(&DataKey::Pubkey)
             .ok_or(Error::NotInitialized)
     }
+
+    pub fn is_payee(env: Env, payee: Address) -> Result<bool, Error> {
+        let policy = read_policy(&env)?;
+        Ok(contains(&policy.payees, &payee))
+    }
+
+    pub fn category_ledger(env: Env, category: Symbol) -> Result<Category, Error> {
+        let policy = read_policy(&env)?;
+        policy
+            .categories
+            .iter()
+            .find(|c| c.name == category)
+            .ok_or(Error::CategoryUnknown)
+    }
+
+    pub fn total_spent(env: Env) -> Result<i128, Error> {
+        let policy = read_policy(&env)?;
+        let total: i128 = policy.categories.iter().map(|c| c.spent).sum();
+        Ok(total)
+    }
 }
 
 #[contractimpl]
