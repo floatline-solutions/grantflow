@@ -518,6 +518,14 @@ impl GrantEscrow {
         read_grant(&env, id)
     }
 
+    pub fn milestone(env: Env, id: u64, idx: u32) -> Result<Milestone, Error> {
+        milestone(&read_grant(&env, id)?, idx)
+    }
+
+    pub fn milestone_count(env: Env, id: u64) -> Result<u32, Error> {
+        Ok(read_grant(&env, id)?.milestones.len())
+    }
+
     /// Reviewers who approved the current submission of a milestone.
     pub fn approvals(env: Env, id: u64, idx: u32) -> Vec<Address> {
         read_approvals(&env, id, idx)
