@@ -8,7 +8,6 @@ without `--submit` and a reachable `SOROBAN_RPC_URL`.
 ## 1. Contracts: the whole journey in the Soroban host
 
 ```sh
-cd stellar/grantflow
 cargo test
 ```
 
@@ -265,10 +264,18 @@ Against a network, `ledger` and `export` read the wallet's `paid` events from So
 (`--events <file.json>` accepts a saved `getEvents` response); `ledger` and `tx_hash` are then
 filled in.
 
-## 8. Testnet (not run here)
+## 8. Testnet (executed 2026-11-05, results in VALIDATION.md)
 
-`scripts/deploy-testnet.sh` generates and funds keys, deploys a test asset and both
-contracts, creates and funds the seed grant, submits milestone-1 evidence through the wallet
-(signed by the grantee key), collects two approvals and makes one vendor payment. It was
-written against stellar-cli 28 but **was not executed** in this environment, which had no
-route to Stellar testnet, Horizon or friendbot.
+The commands above were run against Stellar testnet with `--submit` and `SOROBAN_RPC_URL`
+set; the contract ids and transaction hashes are in `VALIDATION.md`. Funder-side lifecycle
+commands:
+
+```sh
+grantflow release --grant-id 0 --milestone 1 --submit        # pay an Approved milestone once funded
+grantflow extend-deadline --grant-id 0 --deadline 2027-01-31 --submit
+grantflow cancel --grant-id 1 --submit                       # only before any funding
+grantflow clawback --grant-id 0 --submit                     # after the deadline; returns unreleased funds
+```
+
+`scripts/deploy-testnet.sh` automates the setup; it targets stellar-cli 28 and has not itself been run
+(the same steps were done by hand with stellar-cli 25.2).

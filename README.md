@@ -1,5 +1,7 @@
 # GrantFlow
 
+[![ci](https://github.com/floatline-solutions/grantflow/actions/workflows/ci.yml/badge.svg)](https://github.com/floatline-solutions/grantflow/actions/workflows/ci.yml)
+
 Milestone grant disbursement into policy-constrained sub-grantee wallets on Stellar/Soroban.
 
 A funder escrows a grant in USDC, reviewers release each milestone by quorum, and the
@@ -12,7 +14,7 @@ the funder has a live ledger instead of a pile of receipts to reconcile months l
 Sub-grantees in low- and middle-income countries must spend first and claim reimbursement
 in arrears; funds arrive weeks late through correspondent banks and get diverted from
 programmes in the meantime, while funders audit receipts after the fact
-(`research/05-problems-infra-data-ai-climate.md`, P22; `research/08-final-selection.md`, 02).
+(sources and caveats in [VALIDATION.md](VALIDATION.md)).
 Grant-management tools (Fluxx, SmartSimple, Submittable, Open Collective) stop at the approval
 step; the money still takes the slow path and spending control is retrospective.
 
@@ -24,11 +26,11 @@ fiscal sponsors, DFI programmes.
 
 | Piece | What it is |
 |---|---|
-| `contracts/grant_escrow` | Soroban contract: grants with milestones, reviewer set and quorum; `create_grant`, `fund`, `submit_evidence`, `approve` (release at quorum), `release`, `reject`, `clawback` after the deadline, `grant`/`approvals` views. Events on every transition. |
+| `contracts/grant_escrow` | Soroban contract: grants with milestones, reviewer set and quorum; `create_grant`, `fund`, `submit_evidence`, `approve` (release at quorum), `release`, `reject`, `clawback` after the deadline, `extend_deadline`, `cancel_grant`, `grant`/`approvals` views. Events on every transition. |
 | `contracts/policy_wallet` | Soroban **custom account** (`__check_auth`) owned by the grantee key. `pay(category, payee, amount, memo_hash)` is the only thing the grantee key can authorise, and only within the funder's policy: allowlisted payees, per-payment ceiling, spend cap per category. Funder-only `set_policy`, `add_payee`, `remove_payee`, `rotate_key`. `policy()` and `ledger()` views. |
-| `app/` | TypeScript CLI `grantflow create\|fund\|submit\|review\|pay\|ledger\|export` composing transactions offline from the embedded contract specs (submits only when an RPC is reachable), plus the **evidence checker** (`app/src/ai/`): given a milestone spec and a report, one `found / missing / uncertain` verdict per deliverable with a citation. Heuristic provider by default; LLM provider when `LLM_API_KEY` is set. Reviewers decide; the checker never signs. |
+| `app/` | TypeScript CLI `grantflow create\|fund\|release\|clawback\|extend-deadline\|cancel\|submit\|review\|pay\|ledger\|export` composing transactions offline from the embedded contract specs (submits only when an RPC is reachable), plus the **evidence checker** (`app/src/ai/`): given a milestone spec and a report, one `found / missing / uncertain` verdict per deliverable with a citation. Heuristic provider by default; LLM provider when `LLM_API_KEY` is set. Reviewers decide; the checker never signs. |
 | `data/seed/` | A realistic 3-milestone grant (USDC 37,500) for a Senegalese health-research institution, a 5-line budget, 8 vendors (one blocked), 20 messy vendor payments, and four milestone reports. |
-| `scripts/` | `build.sh` (tests, wasm, spec embedding, app tests), `gen-specs.sh`, `deploy-testnet.sh` (deployed successfully to testnet). |
+| `scripts/` | `build.sh` (tests, wasm, spec embedding, app tests), `gen-specs.sh`, `deploy-testnet.sh` (see VALIDATION.md for what was run on testnet). |
 
 Docs: [ARCHITECTURE.md](ARCHITECTURE.md) (contracts, auth flow, trust assumptions),
 [VALIDATION.md](VALIDATION.md) (evidence, metric, experiment plan), [DEMO.md](DEMO.md)
@@ -37,14 +39,13 @@ Docs: [ARCHITECTURE.md](ARCHITECTURE.md) (contracts, auth flow, trust assumption
 ## Quickstart
 
 Prerequisites: Rust 1.94 with target `wasm32v1-none`, stellar-cli 28, Node 22 (see
-`/TOOLCHAIN.md`).
+`CONTRIBUTING.md`).
 
 ```sh
-cd stellar/grantflow
 cargo test                       # 43 contract tests in the Soroban host, incl. the full scenario
 stellar contract build           # target/wasm32v1-none/release/{grant_escrow,policy_wallet}.wasm
 ./scripts/gen-specs.sh           # embed the contract specs into app/src/chain/specs.ts
-cd app && npm install && npm test   # 26 offline tests: evidence checker, CSV export, CLI parsing, tx composition
+cd app && npm install && npm test   # 29 offline tests: evidence checker, CSV export, CLI parsing, tx composition
 ```
 
 Or run everything at once with `./scripts/build.sh`.
@@ -79,7 +80,7 @@ To point the CLI at a network, contract ids and signing keys, export the variabl
   through the host with a signed `SorobanAuthorizationEntry`: a payment succeeds, the same
   entry cannot be replayed, a forged signature fails, and a grantee signature over
   `token.transfer` cannot move funds around the policy.
-- **app (26 tests):** amount parsing of messy input, seed consistency, the offline policy
+- **app (29 tests):** amount parsing of messy input, seed consistency, the offline policy
   simulation reproducing the contract scenario (18 accepted, 2 rejected), the evidence
   checker on complete / partial / empty fixtures, strict-JSON validation and retry of the
   LLM provider with a stubbed client, RPC event decoding and CSV shape, CLI parsing, and
@@ -87,5 +88,8 @@ To point the CLI at a network, contract ids and signing keys, export the variabl
 
 ## Status
 
-**functional locally.** Contracts execute in the Soroban host via `cargo test`; wasm builds
-for `wasm32v1-none`; the app and its tests run offline. The contracts are deployed to Testnet: `grant_escrow` at [CBSOIBLTRBUFLZFJZA6JOFDD2FUCWNWSOOH3XAM2QJJOW4HQAVWGXYPN](https://stellar.expert/explorer/testnet/contract/CBSOIBLTRBUFLZFJZA6JOFDD2FUCWNWSOOH3XAM2QJJOW4HQAVWGXYPN) and `policy_wallet` at [CC4UKCMJEU5SXSQ74CKIUO6DEAKSDQDFADDM2WPAZ46EYN6J2CUWDIGL](https://stellar.expert/explorer/testnet/contract/CC4UKCMJEU5SXSQ74CKIUO6DEAKSDQDFADDM2WPAZ46EYN6J2CUWDIGL). No users, no pilot, no partner: see [VALIDATION.md](VALIDATION.md).
+**functional.** Contracts execute in the Soroban host via `cargo test`; wasm builds for `wasm32v1-none`;
+the app's tests run offline; and a full grant journey (create, fund, reject and resubmit evidence through
+the wallet, quorum approval and release, policy-checked vendor payment, cancel, extend, clawback) was run on
+Stellar testnet on 2026-11-05 with the transaction hashes recorded in [VALIDATION.md](VALIDATION.md).
+Testnet deployment: `grant_escrow` at [`CCXLCGEYREDFVFKSHDZCCDS7O4R5BMPPGFQM2FHWYE6SGJ2NLIEE5ZKO`](https://stellar.expert/explorer/testnet/contract/CCXLCGEYREDFVFKSHDZCCDS7O4R5BMPPGFQM2FHWYE6SGJ2NLIEE5ZKO) and `policy_wallet` at [`CCPPVWREMX53MUVG5MTPYZ3Q3ZBVCB2KUIW6WOQDTHWV3IRIZLETQJ7M`](https://stellar.expert/explorer/testnet/contract/CCPPVWREMX53MUVG5MTPYZ3Q3ZBVCB2KUIW6WOQDTHWV3IRIZLETQJ7M). No users, no pilot, no partner: see [VALIDATION.md](VALIDATION.md).
