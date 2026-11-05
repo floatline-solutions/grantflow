@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { COMMANDS, parseArgs, usage, validateCommand } from "../src/args.js";
+import { COMMANDS, parseArgs, parseDeadline, usage, validateCommand } from "../src/args.js";
 
 test("parseArgs handles --key value, --key=value, booleans and positionals", () => {
   const p = parseArgs(["pay", "--category", "fieldwork", "--amount=340.75", "--submit", "--payee", "V-004", "extra"]);
@@ -39,10 +39,31 @@ test("validateCommand enforces required options per command", () => {
   assert.equal(valueless.ok, false, "a required option given without a value is missing");
 
   for (const [name, spec] of Object.entries(COMMANDS)) {
-    const argv = [name, ...spec.required.flatMap((r) => [`--${r}`, "v"])];
+    const argv = [name, ...spec.required.flatMap((r) => [`--${r}`, r === "grant-id" || r === "milestone" ? "0" : "v"])];
     if (name === "pay") argv.push("--batch", "x.csv");
     assert.equal(validateCommand(parseArgs(argv)).ok, true, name);
   }
   assert.match(usage(), /grantflow <command>/);
   for (const name of ["create", "fund", "submit", "review", "pay", "ledger", "export"]) assert.ok(name in COMMANDS, name);
+});
+
+test("escrow lifecycle commands validate their options", () => {
+  const ok = (argv: string[]) => validateCommand(parseArgs(argv));
+  assert.equal(ok(["release", "--grant-id", "0", "--milestone", "1"]).ok, true);
+  assert.equal(ok(["clawback", "--grant-id", "0"]).ok, true);
+  assert.equal(ok(["cancel", "--grant-id", "3"]).ok, true);
+  assert.equal(ok(["extend-deadline", "--grant-id", "0", "--deadline", "2027-01-31"]).ok, true);
+  const missing = ok(["extend-deadline", "--grant-id", "0"]);
+  assert.equal(missing.ok, false);
+  const bad = ok(["release", "--grant-id", "abc", "--milestone", "0"]);
+  assert.equal(bad.ok, false);
+  assert.match((bad as { error: string }).error, /--grant-id must be a non-negative integer/);
+  assert.equal(ok(["clawback", "--grant-id", "-1"]).ok, false);
+  for (const c of ["release", "clawback", "extend-deadline", "cancel"]) assert.match(usage(), new RegExp(c));
+});
+
+test("parseDeadline accepts unix seconds and dates, rejects the rest", () => {
+  assert.equal(parseDeadline("1800000000"), 1_800_000_000n);
+  assert.equal(parseDeadline("2027-01-31"), BigInt(Date.UTC(2027, 0, 31, 23, 59, 59) / 1000));
+  assert.throws(() => parseDeadline("next week"), /cannot parse deadline/);
 });

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * grantflow CLI: create | fund | submit | review | pay | ledger | export
+ * grantflow CLI: create | fund | release | clawback | extend-deadline | cancel | submit | review | pay | ledger | export
  *
  * Every command composes the contract invocation offline and prints it (args,
  * operation XDR, unsigned transaction XDR and the equivalent stellar-cli
@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Keypair } from "@stellar/stellar-sdk";
-import { parseArgs, usage, validateCommand } from "./args.js";
+import { parseArgs, parseDeadline, usage, validateCommand } from "./args.js";
 import { loadConfig, type Config } from "./config.js";
 import { PLACEHOLDER_CONTRACT_ID, compose, fetchWalletEvents, rpcReachable, submit, type ContractName, type Invocation } from "./chain/client.js";
 import {
@@ -140,6 +140,20 @@ async function cmdFund(flags: Flags, config: Config): Promise<number> {
   const inv = compose("grant_escrow", escrowId(flags, config), "fund", args, config.networkPassphrase, from);
   printInvocation(inv, str(flags, "out"));
   await maybeSubmit(config, flags, inv, config.funderSecret, "FUNDER_SECRET");
+  return 0;
+}
+
+async function cmdEscrowCall(
+  flags: Flags,
+  config: Config,
+  fn: string,
+  args: Record<string, unknown>,
+  secret: string | null,
+  role: string,
+): Promise<number> {
+  const inv = compose("grant_escrow", escrowId(flags, config), fn, args, config.networkPassphrase, publicKeyOf(secret) ?? undefined);
+  printInvocation(inv, str(flags, "out"));
+  await maybeSubmit(config, flags, inv, secret, role);
   return 0;
 }
 
@@ -337,6 +351,14 @@ export async function main(argv: string[], env: NodeJS.ProcessEnv = process.env)
       return cmdCreate(v.flags, config);
     case "fund":
       return cmdFund(v.flags, config);
+    case "release":
+      return cmdEscrowCall(v.flags, config, "release", { id: BigInt(str(v.flags, "grant-id")!), idx: Number(str(v.flags, "milestone")) }, config.funderSecret, "FUNDER_SECRET");
+    case "clawback":
+      return cmdEscrowCall(v.flags, config, "clawback", { id: BigInt(str(v.flags, "grant-id")!) }, config.funderSecret, "FUNDER_SECRET");
+    case "extend-deadline":
+      return cmdEscrowCall(v.flags, config, "extend_deadline", { id: BigInt(str(v.flags, "grant-id")!), new_deadline: parseDeadline(str(v.flags, "deadline")!) }, config.funderSecret, "FUNDER_SECRET");
+    case "cancel":
+      return cmdEscrowCall(v.flags, config, "cancel_grant", { id: BigInt(str(v.flags, "grant-id")!) }, config.funderSecret, "FUNDER_SECRET");
     case "submit":
       return cmdSubmit(v.flags, config);
     case "review":

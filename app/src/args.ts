@@ -60,6 +60,26 @@ export const COMMANDS: Record<string, CommandSpec> = {
     required: ["grant-id", "amount"],
     optional: ["from", "escrow", "submit", "out"],
   },
+  release: {
+    summary: "Compose release(id, idx): pay out an Approved milestone once funds have arrived (permissionless).",
+    required: ["grant-id", "milestone"],
+    optional: ["escrow", "submit", "out"],
+  },
+  clawback: {
+    summary: "Compose clawback(id): the funder reclaims unreleased funds after the deadline and closes the grant.",
+    required: ["grant-id"],
+    optional: ["escrow", "submit", "out"],
+  },
+  "extend-deadline": {
+    summary: "Compose extend_deadline(id, new_deadline) (funder only); the deadline is unix seconds or YYYY-MM-DD.",
+    required: ["grant-id", "deadline"],
+    optional: ["escrow", "submit", "out"],
+  },
+  cancel: {
+    summary: "Compose cancel_grant(id): the funder closes a grant that has not been funded yet.",
+    required: ["grant-id"],
+    optional: ["escrow", "submit", "out"],
+  },
   submit: {
     summary: "Hash a milestone report and compose wallet.submit_evidence(escrow, id, idx, hash).",
     required: ["grant-id", "milestone", "report"],
@@ -111,6 +131,12 @@ export function validateCommand(parsed: ParsedArgs): Validated {
     const set = group.filter((k) => parsed.flags[k] !== undefined);
     if (set.length > 1) return { ok: false, error: `${parsed.command}: use only one of ${group.map((m) => "--" + m).join(", ")}` };
   }
+  for (const key of ["grant-id", "milestone"]) {
+    const v = parsed.flags[key];
+    if (v !== undefined && !/^\d+$/.test(String(v))) {
+      return { ok: false, error: `${parsed.command}: --${key} must be a non-negative integer, got "${String(v)}"` };
+    }
+  }
   if (parsed.command === "pay" && parsed.flags.batch === undefined) {
     const need = ["category", "payee", "amount"].filter((k) => parsed.flags[k] === undefined);
     if (need.length) return { ok: false, error: `pay: missing required option(s): ${need.map((m) => "--" + m).join(", ")} (or --batch <csv>)` };
@@ -127,4 +153,15 @@ export function usage(): string {
   }
   lines.push("", "Global: --seed-dir <dir> (default: ../data/seed), --submit (send when SOROBAN_RPC_URL is reachable), --out <file>");
   return lines.join("\n");
+}
+
+/** "YYYY-MM-DD" (end of that day, UTC) or unix seconds -> unix seconds. */
+export function parseDeadline(input: string): bigint {
+  const s = input.trim();
+  if (/^\d{9,11}$/.test(s)) return BigInt(s);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const ms = Date.parse(`${s}T23:59:59Z`);
+    if (Number.isFinite(ms)) return BigInt(Math.floor(ms / 1000));
+  }
+  throw new Error(`cannot parse deadline "${input}" (use unix seconds or YYYY-MM-DD)`);
 }

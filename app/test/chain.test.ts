@@ -114,3 +114,11 @@ test("previewBatch composes one pay invocation per accepted seed payment", () =>
   assert.equal(results[0].invocation!.fn, "pay");
   assert.equal(ledger.find((l) => l.name === "fieldwork")!.remaining, 0n);
 });
+
+test("compose builds the escrow lifecycle calls with correctly typed ScVals", () => {
+  const kinds = (inv: { scArgs: xdr.ScVal[] }) => inv.scArgs.map((a) => a.type);
+  assert.deepEqual(kinds(compose("grant_escrow", ESCROW, "release", { id: 0n, idx: 1 }, Networks.TESTNET)), ["scvU64", "scvU32"]);
+  assert.deepEqual(kinds(compose("grant_escrow", ESCROW, "clawback", { id: 2n }, Networks.TESTNET)), ["scvU64"]);
+  assert.deepEqual(kinds(compose("grant_escrow", ESCROW, "extend_deadline", { id: 0n, new_deadline: 1_800_000_000n }, Networks.TESTNET)), ["scvU64", "scvU64"]);
+  assert.deepEqual(kinds(compose("grant_escrow", ESCROW, "cancel_grant", { id: 0n }, Networks.TESTNET)), ["scvU64"]);
+});
