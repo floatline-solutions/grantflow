@@ -17,6 +17,7 @@ import {
   authorizeEntry,
   contract,
   rpc,
+  scValToNative,
   xdr,
   type Transaction,
 } from "@stellar/stellar-sdk";
@@ -165,6 +166,21 @@ export async function submit(
       authorizeEntry: (entry, _signer, validUntil, passphrase) =>
         authorizeWalletEntry(entry, keypair, validUntil, passphrase, contractId),
     });
+    // The first simulation ran before the signature existed, so it did not budget for the
+    // wallet's __check_auth (Ed25519 verification) and the transaction would fail on the
+    // network with a resource-limit error. Re-simulate with the signed entry, then assemble.
+    const server = new rpc.Server(config.rpcUrl, { allowHttp: config.rpcUrl.startsWith("http:") });
+    const signedTx = assembled.built!;
+    const sim = await server.simulateTransaction(signedTx);
+    if (rpc.Api.isSimulationError(sim)) throw new Error(`Transaction simulation failed: ${sim.error}`);
+    const prepared = rpc.assembleTransaction(signedTx, sim).build();
+    prepared.sign(keypair);
+    const sentTx = await server.sendTransaction(prepared);
+    if (sentTx.status === "ERROR") throw new Error(`${fn} was rejected by the network: ${sentTx.status}`);
+    const done = await server.pollTransaction(sentTx.hash, { attempts: 30 });
+    if (done.status !== "SUCCESS") throw new Error(`${fn} failed on-chain (${done.status}), tx ${sentTx.hash}`);
+    const returned = done.returnValue;
+    return { hash: sentTx.hash, result: returned === undefined ? null : scValToNative(returned) };
   }
   const sent = await assembled.signAndSend();
   const hash = sent.sendTransactionResponse?.hash ?? "";
